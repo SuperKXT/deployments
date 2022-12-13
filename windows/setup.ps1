@@ -1,16 +1,37 @@
 # Set correct permission in powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
-[Net.ServicePointManager]::SecurityProtocol = "Tls, Tls11, Tls12, Ssl3"
+[Net.ServicePointManager]::SecurityProtocol = 'Tls, Tls11, Tls12, Ssl3'
 
-$frontend_token = READ-HOST -Prompt "Access Token For The Frontend:"
-$backend_token = READ-HOST -Prompt "Access Token For The Backend:"
+Write-Host '-- FRONTEND --'
+$frontend_user = Read-Host -Prompt 'Github User [WiMetrix]:'
+if ([string]::IsNullOrWhiteSpace($frontend_user)) {
+	$frontend_user = 'WiMetrix'
+}
+While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
+	$frontend_repo = Read-Host -Prompt 'Github Repo:'
+}
+While ([string]::IsNullOrWhiteSpace($frontend_token)) {
+	$frontend_token = Read-Host -Prompt 'Access Token:'
+}
+
+Write-Host '-- BACKEND --'
+$backend_user = Read-Host -Prompt 'Github User [WiMetrix]:'
+if ([string]::IsNullOrWhiteSpace($backend_user)) {
+	$backend_user = 'WiMetrix'
+}
+While ([string]::IsNullOrWhiteSpace($backend_repo)) {
+	$backend_repo = Read-Host -Prompt 'Github Repo:'
+}
+While ([string]::IsNullOrWhiteSpace($backend_token)) {
+	$backend_token = Read-Host -Prompt 'Access Token:'
+}
 
 # Install node
 Write-Host 'Downloading Node js'
 Invoke-WebRequest 'https://nodejs.org/dist/v18.12.1/node-v18.12.1-x86.msi' -OutFile node.msi
 Start-Process .\node.msi -Wait
 rm .\node.msi
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 corepack enable
 corepack prepare pnpm@latest --activate
 Write-Host 'Node Installed!'
@@ -30,13 +51,6 @@ $env:Path += ';C:\Program Files\Git\bin\;C:\Program Files\Git\cnd\'
 rm .\code.exe
 Write-Host 'VS Code Installed!'
 
-# Create directories
-mkdir deployment
-Set-Location deployment
-mkdir frontend
-mkdir backend
-Set-Location ..
-
 # Install PM2 https://github.com/jessety/pm2-installer
 Write-Host 'Downloading PM2'
 Invoke-WebRequest 'https://github.com/jessety/pm2-installer/archive/main.zip' -OutFile pm2.zip
@@ -46,8 +60,35 @@ Set-Location pm2-installer-main
 npm run configure
 npm run configure-policy
 npm run setup
-$env:PM2_HOME='C:\ProgramData\pm2\home'
+$env:PM2_HOME = 'C:\ProgramData\pm2\home'
 # Copy and run any additional command you are asked to run after running the above
 Set-Location ..
 rmdir pm2-installer-main
 Write-Host 'PM2 Installed! And configured as a service'
+
+# Create directories
+mkdir frontend
+mkdir backend
+
+# Download the action runner
+Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.299.1/actions-runner-win-x64-2.299.1.zip -OutFile runner.zip
+# Optional: Validate the hash
+if ((Get-FileHash -Path runner.zip -Algorithm SHA256).Hash.ToUpper() -ne 'f7940b16451d6352c38066005f3ee6688b53971fcc20e4726c7907b32bfdf539'.ToUpper()) { throw 'Computed checksum did not match' }
+
+# Setup frontend action runner
+Copy-Item ./runner.zip ./frontend/
+Set-Location frontend
+Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/runner.zip", "$PWD")
+Remove-Item ./runner.zip
+# Extract the installer
+./config.cmd --url https://github.com/$frontend_user/$frontend_repo --token $frontend_token
+Set-Location ..
+
+# Setup frontend action runner
+Copy-Item ./runner.zip ./backend/
+Set-Location backend
+Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/runner.zip", "$PWD")
+Remove-Item ./runner.zip
+# Extract the installer
+./config.cmd --url https://github.com/$backend_user/$backend_repo --token $backend_token
+Set-Location ..

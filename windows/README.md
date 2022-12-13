@@ -1,14 +1,10 @@
 # Windows Deployments With Github Actions
 
->If you are getting SSL TLS error while trying to use `Invoke-WebRequest`, Run in PowerShell:
->
->```powershell
->[Net.ServicePointManager]::SecurityProtocol = "Tls, Tls11, Tls12, Ssl3"
->```
-
+- Get the frontend and backend runner
+  - Go to `github.com/{user}/{repo}/settings/actions/runners/new`
+  - Copy the token from the end of first command in the Configure section ![image](../images/token.png)
 - Open an elevated powershell terminal
 - Run the script
-
-```powershell
-setup.ps1
-```
+- When prompted enter the frontend and backend config
+- Add the appropriate tags to the runner (`production` or `qa`)
+- Start both runners as a windows server
