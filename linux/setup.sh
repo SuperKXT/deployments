@@ -1,29 +1,23 @@
 #!/usr/bin/env bash
 
-echo "Frontend Details:"
-
-read -rp 'Github User For The Frontend [WiMetrix]:' frontend_user
+echo "-- FRONTEND --"
+read -rp 'Github User [WiMetrix]:' frontend_user
 frontend_user=${frontend_user:-WiMetrix}
-
 while [ -z "${frontend_repo}" ]; do
-	read -rp 'Github Repo For The Frontend:' frontend_repo
+	read -rp 'Github Repo:' frontend_repo
 done
-
 while [ -z "${frontend_token}" ]; do
-	read -rp 'Access Token For The Frontend:' frontend_token
+	read -rp 'Access Token:' frontend_token
 done
 
-echo "Backend Details:"
-
-read -rp 'Github User For The Backend [WiMetrix]:' backend_user
+echo "-- BACKEND --"
+read -rp 'Github User [WiMetrix]:' backend_user
 frontend_user=${backend_user:-WiMetrix}
-
 while [ -z "${backend_repo}" ]; do
-	read -rp 'Github Repo For The Backend:' backend_repo
+	read -rp 'Github Repo:' backend_repo
 done
-
 while [ -z "${backend_token}" ]; do
-	read -rp 'Access Token For The Backend:' backend_token
+	read -rp 'Access Token:' backend_token
 done
 
 # install nvm
