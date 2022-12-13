@@ -5,6 +5,6 @@
   - Copy the token from the end of first command in the Configure section ![image](../images/token.png)
 - Open an elevated powershell terminal
 - Run the script
-- When prompted enter the frontend and backend config
+- When prompted provide the frontend and backend config
 - Add the appropriate tags to the runner (`production` or `qa`)
-- Start both runners as a windows server
+- Start both runners as a windows service

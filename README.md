@@ -34,6 +34,8 @@ Run the script
 ./linux/setup.sh
 ```
 
-When prompted enter the frontend and backend config
+When prompted provide the frontend and backend config
 
 Add the appropriate tags to the runner (`production` or `qa`)
+
+If on Windows, Start both runners as a windows service
