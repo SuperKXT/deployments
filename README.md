@@ -2,6 +2,22 @@
 
 Scripts to deploy frontend and backend projects to self-hosted servers via github actions on Windows or Linux
 
+## Details
+
+- `(Linux only)` Install nvm
+- Installs Node.js `(with nvm on Linux)`
+- Enables corepack and updates pnpm
+- `(Windows only)` Installs git
+- Install VS Code
+- Installs and sets up pm2 as as service with [`pm2-installer`](https://github.com/jessety/pm2-installer)
+- Sets up Github Action Runners for frontend and backend as a service
+
+---
+
+❗️The Windows script does not use WinGet because some servers are not up to date and do not have WinGet
+
+---
+
 ## Deployment
 
 Open:
@@ -25,13 +41,13 @@ Run the script
 - Windows
 
 ```powershell
-./windows/setup.ps1
+./setup.ps1
 ```
 
 - Linux
 
 ```bash
-./linux/setup.sh
+./setup.sh
 ```
 
 When prompted provide the frontend and backend config
