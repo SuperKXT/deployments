@@ -1,6 +1,7 @@
 # Deployment scripts and instructions
 
-Scripts to deploy frontend and backend projects to self-hosted servers via github actions on Windows or Linux
+Scripts to deploy frontend and backend projects to self-hosted servers via
+github actions on Windows or Linux
 
 ## Details
 
@@ -9,12 +10,14 @@ Scripts to deploy frontend and backend projects to self-hosted servers via githu
 - Enables corepack and updates pnpm
 - `(Windows only)` Installs git
 - Installs VS Code
-- Installs and sets up pm2 as as service with [`pm2-installer`](https://github.com/jessety/pm2-installer)
+- Installs and sets up pm2 as as service with
+  [`pm2-installer`](https://github.com/jessety/pm2-installer)
 - Sets up Github Action Runners for frontend and backend as a service
 
 ---
 
-❗️The Windows script does not use WinGet because some servers are not up to date and do not have WinGet
+❗️The Windows script does not use WinGet because some servers are not up to date
+and do not have WinGet
 
 ---
 
@@ -34,7 +37,8 @@ git clone https://github.com/SuperKXT/deployments
 Get the frontend and backend runner tokens
 
 - Go to `github.com/{user}/{repo}/settings/actions/runners/new`
-- Copy the token from the end of first command in the Configure section ![image](./images/token.png)
+- Copy the token from the end of first command in the Configure
+  section ![image](./images/token.png)
 
 Run the script
 
