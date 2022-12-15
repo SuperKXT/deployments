@@ -38,7 +38,7 @@ Get the frontend and backend runner tokens
 
 Run the script
 
-- Windows
+- Windows (run in an elevated powershell terminal)
 
 ```powershell
 ./setup.ps1
@@ -47,6 +47,7 @@ Run the script
 - Linux
 
 ```bash
+chmod u+x ./setup.sh
 ./setup.sh
 ```
 
