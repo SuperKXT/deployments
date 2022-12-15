@@ -6,51 +6,29 @@ GREY='\e[37m'
 NC='\e[0m'
 
 echo -e "\n${BLUE}-- FRONTEND --${NC}"
-while true; do
-	echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
-	read -r frontend_user
-	frontend_user=${frontend_user:-WiMetrixDev}
-	while [ -z "${frontend_repo}" ]; do
-		echo -e -n "${GREY}Github Repo:${NC} "
-		read -r frontend_repo
-	done
-	while [ -z "${frontend_token}" ]; do
-		echo -e -n "${GREY}Access Token:${NC} "
-		read -r frontend_token
-	done
-
-	if ! git ls-remote https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token" -q; then
-		frontend_user=''
-		frontend_repo=''
-		frontend_token=''
-	else
-		echo -e "${GREEN}Success!${NC}"
-		break
-	fi
+echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
+read -r frontend_user
+frontend_user=${frontend_user:-WiMetrixDev}
+while [ -z "${frontend_repo}" ]; do
+	echo -e -n "${GREY}Github Repo:${NC} "
+	read -r frontend_repo
+done
+while [ -z "${frontend_token}" ]; do
+	echo -e -n "${GREY}Access Token:${NC} "
+	read -r frontend_token
 done
 
 echo -e "\n${BLUE}-- BACKEND --${NC}"
-while true; do
-	echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
-	read -r backend_user
-	backend_user=${backend_user:-WiMetrixDev}
-	while [ -z "${backend_repo}" ]; do
-		echo -e -n "${GREY}Github Repo:${NC} "
-		read -r backend_repo
-	done
-	while [ -z "${backend_token}" ]; do
-		echo -e -n "${GREY}Access Token:${NC} "
-		read -r backend_token
-	done
-
-	if ! git ls-remote https://github.com/"$backend_user"/"$backend_repo" --token "$backend_token" -q; then
-		backend_user=''
-		backend_repo=''
-		backend_token=''
-	else
-		echo -e "${GREEN}Success!${NC}"
-		break
-	fi
+echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
+read -r backend_user
+backend_user=${backend_user:-WiMetrixDev}
+while [ -z "${backend_repo}" ]; do
+	echo -e -n "${GREY}Github Repo:${NC} "
+	read -r backend_repo
+done
+while [ -z "${backend_token}" ]; do
+	echo -e -n "${GREY}Access Token:${NC} "
+	read -r backend_token
 done
 
 echo -e "\n${BLUE}Downloading NVM...${NC}"
