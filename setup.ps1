@@ -3,21 +3,58 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 [Net.ServicePointManager]::SecurityProtocol = 'Tls, Tls11, Tls12, Ssl3'
 
 Write-Host '-- FRONTEND --'
-$frontend_user = Read-Host -Prompt 'Github User [WiMetrix]:'
-if ([string]::IsNullOrWhiteSpace($frontend_user)) {
-	$frontend_user = 'WiMetrix'
-}
-While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
-	$frontend_repo = Read-Host -Prompt 'Github Repo:'
-}
-While ([string]::IsNullOrWhiteSpace($frontend_token)) {
-	$frontend_token = Read-Host -Prompt 'Access Token:'
+While (true) {
+	$frontend_user = Read-Host -Prompt 'Github User [WiMetrixDev]:'
+	If ([string]::IsNullOrWhiteSpace($frontend_user)) {
+		$frontend_user = 'WiMetrixDev'
+	}
+	While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
+		$frontend_repo = Read-Host -Prompt 'Github Repo:'
+	}
+	While ([string]::IsNullOrWhiteSpace($frontend_token)) {
+		$frontend_token = Read-Host -Prompt 'Access Token:'
+	}
+	$res = Git ls-remote https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token" -q
+	If ([int]$res -eq 0) {
+		$frontend_user = ''
+		$frontend_repo = ''
+		$frontend_token = ''
+	}
+	Else {
+		Write-Host 'Success!'
+		Break
+	}
 }
 
 Write-Host '-- BACKEND --'
-$backend_user = Read-Host -Prompt 'Github User [WiMetrix]:'
+While (true) {
+	$backend_user = Read-Host -Prompt 'Github User [WiMetrixDev]:'
+	If ([string]::IsNullOrWhiteSpace($backend_user)) {
+		$backend_user = 'WiMetrixDev'
+	}
+	While ([string]::IsNullOrWhiteSpace($backend_repo)) {
+		$backend_repo = Read-Host -Prompt 'Github Repo:'
+	}
+	While ([string]::IsNullOrWhiteSpace($backend_token)) {
+		$backend_token = Read-Host -Prompt 'Access Token:'
+	}
+	$res = Git ls-remote https://github.com/"$backend_user"/"$backend_repo" --token "$backend_token" -q
+	If ([int]$res -eq 0) {
+		$backend_user = ''
+		$backend_repo = ''
+		$backend_token = ''
+	}
+	Else {
+		Write-Host 'Success!'
+		Break
+	}
+}
+
+
+Write-Host '-- BACKEND --'
+$backend_user = Read-Host -Prompt 'Github User [WiMetrixDev]:'
 if ([string]::IsNullOrWhiteSpace($backend_user)) {
-	$backend_user = 'WiMetrix'
+	$backend_user = 'WiMetrixDev'
 }
 While ([string]::IsNullOrWhiteSpace($backend_repo)) {
 	$backend_repo = Read-Host -Prompt 'Github Repo:'
