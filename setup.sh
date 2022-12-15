@@ -10,8 +10,8 @@ while true; do
 	while [ -z "${frontend_token}" ]; do
 		read -rp 'Access Token:' frontend_token
 	done
-	command=git ls-remote https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token" -q
-	if [[ ! $command ]]; then
+	res=$(git ls-remote https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token" -q)
+	if [[ ! $res ]]; then
 		frontend_user=''
 		frontend_repo=''
 		frontend_token=''
