@@ -4,11 +4,11 @@ Scripts to deploy frontend and backend projects to self-hosted servers via githu
 
 ## Details
 
-- `(Linux only)` Install nvm
+- `(Linux only)` Installs nvm
 - Installs Node.js `(with nvm on Linux)`
 - Enables corepack and updates pnpm
 - `(Windows only)` Installs git
-- Install VS Code
+- Installs VS Code
 - Installs and sets up pm2 as as service with [`pm2-installer`](https://github.com/jessety/pm2-installer)
 - Sets up Github Action Runners for frontend and backend as a service
 
