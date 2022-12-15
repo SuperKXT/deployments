@@ -1,23 +1,45 @@
 #!/usr/bin/env bash
 
 echo "-- FRONTEND --"
-read -rp 'Github User [WiMetrix]:' frontend_user
-frontend_user=${frontend_user:-WiMetrix}
-while [ -z "${frontend_repo}" ]; do
-	read -rp 'Github Repo:' frontend_repo
-done
-while [ -z "${frontend_token}" ]; do
-	read -rp 'Access Token:' frontend_token
+while true; do
+	read -rp 'Github User [WiMetrixDev]:' frontend_user
+	frontend_user=${frontend_user:-WiMetrixDev}
+	while [ -z "${frontend_repo}" ]; do
+		read -rp 'Github Repo:' frontend_repo
+	done
+	while [ -z "${frontend_token}" ]; do
+		read -rp 'Access Token:' frontend_token
+	done
+	command=git ls-remote https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token" -q
+	if [[ ! $command ]]; then
+		frontend_user=''
+		frontend_repo=''
+		frontend_token=''
+	else
+		echo 'Success!'
+		break
+	fi
 done
 
 echo "-- BACKEND --"
-read -rp 'Github User [WiMetrix]:' backend_user
-frontend_user=${backend_user:-WiMetrix}
-while [ -z "${backend_repo}" ]; do
-	read -rp 'Github Repo:' backend_repo
-done
-while [ -z "${backend_token}" ]; do
-	read -rp 'Access Token:' backend_token
+while true; do
+	read -rp 'Github User [WiMetrixDev]:' backend_user
+	backend_user=${backend_user:-WiMetrixDev}
+	while [ -z "${backend_repo}" ]; do
+		read -rp 'Github Repo:' backend_repo
+	done
+	while [ -z "${backend_token}" ]; do
+		read -rp 'Access Token:' backend_token
+	done
+	command=git ls-remote https://github.com/"$backend_user"/"$backend_repo" --token "$backend_token" -q
+	if [[ ! $command ]]; then
+		backend_user=''
+		backend_repo=''
+		backend_token=''
+	else
+		echo 'Success!'
+		break
+	fi
 done
 
 echo 'Downloading NVM...'
