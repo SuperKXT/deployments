@@ -27,7 +27,7 @@ While ([string]::IsNullOrWhiteSpace($backend_token)) {
 }
 
 # Install node
-Write-Host 'Downloading Node js'
+Write-Host 'Downloading Node js...'
 Invoke-WebRequest 'https://nodejs.org/dist/v18.12.1/node-v18.12.1-x86.msi' -OutFile node.msi
 Start-Process .\node.msi -Wait
 rm .\node.msi
@@ -37,14 +37,14 @@ corepack prepare pnpm@latest --activate
 Write-Host 'Node Installed!'
 
 # Install Git
-Write-Host 'Downloading the git for windows installer'
+Write-Host 'Downloading Git For Windows..'
 Invoke-WebRequest 'https://github.com/git-for-windows/git/releases/download/v2.38.1.windows.1/Git-2.38.1-64-bit.exe' -OutFile git.exe
 Start-Process .\git.exe -Wait
 rm .\git.exe
 Write-Host 'Git Installed!'
 
 # Install VS Code
-Write-Host 'Downloading Visual Studio Code'
+Write-Host 'Downloading VS Code...'
 Invoke-WebRequest 'https://code.visualstudio.com/sha/download?build=stable&os=win32-x64' -OutFile code.exe
 Start-Process .\code.exe -Wait
 $env:Path += ';C:\Program Files\Git\bin\;C:\Program Files\Git\cnd\'
@@ -52,7 +52,7 @@ rm .\code.exe
 Write-Host 'VS Code Installed!'
 
 # Install PM2 https://github.com/jessety/pm2-installer
-Write-Host 'Downloading PM2'
+Write-Host 'Downloading PM2...'
 Invoke-WebRequest 'https://github.com/jessety/pm2-installer/archive/main.zip' -OutFile pm2.zip
 Expand-Archive pm2.zip .\
 rm pm2.zip
@@ -70,11 +70,14 @@ Write-Host 'PM2 Installed! And configured as a service'
 mkdir frontend
 mkdir backend
 
+Write-Host 'Downloading Github Action Runner...'
 # Download the action runner
 Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.299.1/actions-runner-win-x64-2.299.1.zip -OutFile runner.zip
 # Optional: Validate the hash
 if ((Get-FileHash -Path runner.zip -Algorithm SHA256).Hash.ToUpper() -ne 'f7940b16451d6352c38066005f3ee6688b53971fcc20e4726c7907b32bfdf539'.ToUpper()) { throw 'Computed checksum did not match' }
+Write-Host 'Action Runner Downloaded!'
 
+Write-Host 'Setting Up Frontend Runner...'
 # Setup frontend action runner
 Copy-Item ./runner.zip ./frontend/
 Set-Location frontend
@@ -83,7 +86,9 @@ Remove-Item ./runner.zip
 # Extract the installer
 ./config.cmd --url https://github.com/$frontend_user/$frontend_repo --token $frontend_token
 Set-Location ..
+Write-Host 'Frontend Runner Started!'
 
+Write-Host 'Setting Up Backend Runner...'
 # Setup frontend action runner
 Copy-Item ./runner.zip ./backend/
 Set-Location backend
@@ -92,3 +97,4 @@ Remove-Item ./runner.zip
 # Extract the installer
 ./config.cmd --url https://github.com/$backend_user/$backend_repo --token $backend_token
 Set-Location ..
+Write-Host 'Backend Runner Started!'
