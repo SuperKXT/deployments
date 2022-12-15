@@ -2,17 +2,20 @@
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 [Net.ServicePointManager]::SecurityProtocol = 'Tls, Tls11, Tls12, Ssl3'
 
-Write-Host '-- FRONTEND --'
+Write-Host '\n-- FRONTEND --' -ForegroundColor Blue
 While (true) {
-	$frontend_user = Read-Host -Prompt 'Github User [WiMetrixDev]:'
+	Write-Host 'Github User [WiMetrixDev]: ' -ForegroundColor Gray -NoNewline
+	$frontend_user = Read-Host
 	If ([string]::IsNullOrWhiteSpace($frontend_user)) {
 		$frontend_user = 'WiMetrixDev'
 	}
 	While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
-		$frontend_repo = Read-Host -Prompt 'Github Repo:'
+		Write-Host 'Github Repo: ' -ForegroundColor Gray -NoNewline
+		$frontend_repo = Read-Host
 	}
 	While ([string]::IsNullOrWhiteSpace($frontend_token)) {
-		$frontend_token = Read-Host -Prompt 'Access Token:'
+		Write-Host 'Access Token: ' -ForegroundColor Gray -NoNewline
+		$frontend_token = Read-Host
 	}
 	$res = Git ls-remote https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token" -q
 	If ([int]$res -eq 0) {
@@ -21,22 +24,25 @@ While (true) {
 		$frontend_token = ''
 	}
 	Else {
-		Write-Host 'Success!'
+		Write-Host 'Success!' -ForegroundColor Green
 		Break
 	}
 }
 
-Write-Host '-- BACKEND --'
+Write-Host '\n-- BACKEND --' -ForegroundColor Blue
 While (true) {
-	$backend_user = Read-Host -Prompt 'Github User [WiMetrixDev]:'
+	Write-Host 'Github User [WiMetrixDev]: ' -ForegroundColor Gray -NoNewline
+	$backend_user = Read-Host
 	If ([string]::IsNullOrWhiteSpace($backend_user)) {
 		$backend_user = 'WiMetrixDev'
 	}
 	While ([string]::IsNullOrWhiteSpace($backend_repo)) {
-		$backend_repo = Read-Host -Prompt 'Github Repo:'
+		Write-Host 'Github Repo: ' -ForegroundColor Gray -NoNewline
+		$backend_repo = Read-Host
 	}
 	While ([string]::IsNullOrWhiteSpace($backend_token)) {
-		$backend_token = Read-Host -Prompt 'Access Token:'
+		Write-Host 'Access Token: ' -ForegroundColor Gray -NoNewline
+		$backend_token = Read-Host
 	}
 	$res = Git ls-remote https://github.com/"$backend_user"/"$backend_repo" --token "$backend_token" -q
 	If ([int]$res -eq 0) {
@@ -45,22 +51,9 @@ While (true) {
 		$backend_token = ''
 	}
 	Else {
-		Write-Host 'Success!'
+		Write-Host 'Success!' -ForegroundColor Green
 		Break
 	}
-}
-
-
-Write-Host '-- BACKEND --'
-$backend_user = Read-Host -Prompt 'Github User [WiMetrixDev]:'
-if ([string]::IsNullOrWhiteSpace($backend_user)) {
-	$backend_user = 'WiMetrixDev'
-}
-While ([string]::IsNullOrWhiteSpace($backend_repo)) {
-	$backend_repo = Read-Host -Prompt 'Github Repo:'
-}
-While ([string]::IsNullOrWhiteSpace($backend_token)) {
-	$backend_token = Read-Host -Prompt 'Access Token:'
 }
 
 # Install node
