@@ -32,65 +32,52 @@ while [ -z "${backend_token}" ]; do
 done
 
 # install nvm
-if ! git --version; then
-	while ! git --version; do
-		echo -e "\n${BLUE}Downloading Git...${NC}"
-		sudo apt update
-		sudo apt install git-all
-		echo -e "${GREEN}Git Installed!${NC}"
-	done
-else
-	echo -e "${GREEN}Git Already Installed!${NC}"
-fi
+while ! git --version; do
+	echo -e "\n${BLUE}Downloading Git...${NC}"
+	sudo apt update
+	sudo apt install git-all
+done
+echo -e "${GREEN}Git Installed!${NC}"
 
 # install nvm
-if ! nvm --version; then
-	while ! nvm --version; do
-		echo -e "\n${BLUE}Downloading NVM...${NC}"
-		curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-		echo -e "${GREEN}NVM Installed!${NC}"
-		NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-		export NVM_DIR
-		[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-	done
-else
-	echo -e "${GREEN}NVM Already Installed!${NC}"
-fi
+
+while ! nvm --version; do
+	echo -e "\n${BLUE}Downloading NVM...${NC}"
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+	NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+	export NVM_DIR
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+done
+echo -e "${GREEN}NVM Installed!${NC}"
 
 echo -e "\n${BLUE}Downloading Node...${NC}"
-# istall node
 nvm install lts/*
 nvm alias default lts/*
 nvm use default
-# enable corepack and pnpm
 corepack enable
 corepack prepare pnpm@latest --activate
 echo -e "${GREEN}Node Installed!${NC}"
 
-if ! code --version; then
-	# Install VS Code
+while ! code --version &>/dev/null; do
 	echo -e "\n${BLUE}Downloading VS Code...${NC}"
 	wget 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -out code.deb
 	./code.deb
 	echo -e "${GREEN}VS Code Installed!${NC}"
-else
-	echo -e "${GREEN}VS Code Already Installed!${NC}"
-fi
+done
 
-echo -e "\n${BLUE}Download PM2...${NC}"
-# install pm2 https://github.com/jessety/pm2-installer
-wget https://github.com/jessety/pm2-installer/archive/main.zip
-unzip main.zip
-rm -f main.zip
+if ! test -f "pm2-install-main"; then
+	echo -e "\n${BLUE}Download PM2...${NC}"
+	wget https://github.com/jessety/pm2-installer/archive/main.zip
+	unzip main.zip
+	rm -f main.zip
+fi
 cd pm2-installer-main || exit
 npm run configure
 npm run setup
 cd .. || exit
-rm -rf pm2-insaller-main
-# Copy and run any additional command you are asked to run after running the above
+rm -rf ./pm2-insaller-main
 echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 
-# create directories
 mkdir frontend
 mkdir backend
 
@@ -108,9 +95,9 @@ fi
 echo -e "\n${BLUE}Setting Up Frontend Runner...${NC}"
 # Setup frontend action runner
 cp -r ./runner.tar.gz ./frontend
-tar xzf ./frontend/runner.tar.gz
-rm -rf ./frontend/runner.tar.gz
 cd frontend || exit
+tar xzf ./runner.tar.gz
+rm ./runner.tar.gz
 ./config.sh --url https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token"
 sudo ./svc.sh install
 sudo ./svc.sh start
@@ -121,9 +108,9 @@ echo -e "${GREEN}Frontend Runner Started!${NC}"
 echo -e "\n${BLUE}Setting Up Backend Runner...${NC}"
 # Setup backend action runner
 cp -r ./runner.tar.gz ./backend
-tar xzf ./backend/runner.tar.gz
-rm -rf ./backend/runner.tar.gz
 cd backend || exit
+tar xzf ./runner.tar.gz
+rm ./runner.tar.gz
 ./config.sh --url https://github.com/"$backend_user"/"$backend_repo" --token "$backend_token"
 sudo ./svc.sh install
 sudo ./svc.sh start
