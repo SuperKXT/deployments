@@ -10,6 +10,7 @@ While ($true) {
 		if (-not $retrying) {
 			Write-Host "Git is already installed." -ForegroundColor Green
 		}
+		git config --system core.longpaths true
 		break
 	}
 	Catch [System.Management.Automation.CommandNotFoundException] {
@@ -27,68 +28,62 @@ While ($true) {
 }
 
 Write-Host "`n-- FRONTEND --" -ForegroundColor Blue
-While ($true) {
-	Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
-	$frontend_user = Read-Host
-	If ([string]::IsNullOrWhiteSpace($frontend_user)) {
-		$frontend_user = "WiMetrixDev"
-	}
-	While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
-		Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
-		$frontend_repo = Read-Host
-	}
-	While ([string]::IsNullOrWhiteSpace($frontend_token)) {
-		Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
-		$frontend_token = Read-Host
-	}
-	git ls-remote https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token" -q
-	If ([int]$LASTEXITCODE -gt 0) {
-		$frontend_user = ""
-		$frontend_repo = ""
-		$frontend_token = ""
-	}
-	Else {
-		Write-Host "Success!" -ForegroundColor Green
-		Break
-	}
+Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
+$frontend_user = Read-Host
+If ([string]::IsNullOrWhiteSpace($frontend_user)) {
+	$frontend_user = "WiMetrixDev"
+}
+While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
+	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
+	$frontend_repo = Read-Host
+}
+While ([string]::IsNullOrWhiteSpace($frontend_token)) {
+	Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
+	$frontend_token = Read-Host
 }
 
 Write-Host "`n-- BACKEND --" -ForegroundColor Blue
-While ($true) {
-	Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
-	$backend_user = Read-Host
-	If ([string]::IsNullOrWhiteSpace($backend_user)) {
-		$backend_user = "WiMetrixDev"
-	}
-	While ([string]::IsNullOrWhiteSpace($backend_repo)) {
-		Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
-		$backend_repo = Read-Host
-	}
-	While ([string]::IsNullOrWhiteSpace($backend_token)) {
-		Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
-		$backend_token = Read-Host
-	}
-	git ls-remote https://github.com/"$backend_user"/"$backend_repo" --token "$backend_token" -q
-	If ([int]$LASTEXITCODE -gt 0) {
-		$backend_user = ""
-		$backend_repo = ""
-		$backend_token = ""
-	}
-	Else {
-		Write-Host "Success!" -ForegroundColor Green
-		Break
-	}
+Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
+$backend_user = Read-Host
+If ([string]::IsNullOrWhiteSpace($backend_user)) {
+	$backend_user = "WiMetrixDev"
+}
+While ([string]::IsNullOrWhiteSpace($backend_repo)) {
+	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
+	$backend_repo = Read-Host
+}
+While ([string]::IsNullOrWhiteSpace($backend_token)) {
+	Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
+	$backend_token = Read-Host
 }
 
 # Install node
-Write-Host "`nDownloading Node js..." -ForegroundColor Blue
-Invoke-WebRequest "https://nodejs.org/dist/v18.12.1/node-v18.12.1-x86.msi" -OutFile node.msi
-Start-Process -Path node.msi -Wait
-Remove-Item -Path node.msi
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-corepack enable
-corepack prepare pnpm@latest --activate
-Write-Host "Node Installed!" -ForegroundColor Green
+$retrying = $false
+While ($true) {
+	Try {
+		$null = node --version
+		if (-not $retrying) {
+			Write-Host "Node is already installed." -ForegroundColor Green
+		}
+		git config --system core.longpaths true
+		break
+	}
+	Catch [System.Management.Automation.CommandNotFoundException] {
+		if ($retrying) {
+			Throw "Node is not installed, and installation on demand failed."
+		}
+		WWrite-Host "`nDownloading Node js..." -ForegroundColor Blue
+		Invoke-WebRequest "https://nodejs.org/dist/v18.12.1/node-v18.12.1-x86.msi" -OutFile node.msi
+		Start-Process -Path node.msi -Wait
+		Remove-Item -Path node.msi
+		$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+		corepack enable
+		corepack prepare pnpm@latest --activate
+		Write-Host "Node Installed!" -ForegroundColor Green
+		$retrying = $true
+	}
+}
+
 
 # Install VS Code
 Write-Host "`nDownloading VS Code..." -ForegroundColor Blue
