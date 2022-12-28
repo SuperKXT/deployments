@@ -5,32 +5,6 @@ GREEN='\e[32m'
 GREY='\e[37m'
 NC='\e[0m'
 
-echo -e "\n${BLUE}-- FRONTEND --${NC}"
-echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
-read -r frontend_user
-frontend_user=${frontend_user:-WiMetrixDev}
-while [ -z "${frontend_repo}" ]; do
-	echo -e -n "${GREY}Github Repo:${NC} "
-	read -r frontend_repo
-done
-while [ -z "${frontend_token}" ]; do
-	echo -e -n "${GREY}Access Token:${NC} "
-	read -r frontend_token
-done
-
-echo -e "\n${BLUE}-- BACKEND --${NC}"
-echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
-read -r backend_user
-backend_user=${backend_user:-WiMetrixDev}
-while [ -z "${backend_repo}" ]; do
-	echo -e -n "${GREY}Github Repo:${NC} "
-	read -r backend_repo
-done
-while [ -z "${backend_token}" ]; do
-	echo -e -n "${GREY}Access Token:${NC} "
-	read -r backend_token
-done
-
 # install nvm
 while ! git --version; do
 	echo -e "\n${BLUE}Downloading Git...${NC}"
@@ -91,6 +65,32 @@ if ! test -f "runner.tar.gz"; then
 else
 	echo -e "${GREEN}Action Runner Already Downloaded!${NC}"
 fi
+
+echo -e "\n${BLUE}-- FRONTEND --${NC}"
+echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
+read -r frontend_user
+frontend_user=${frontend_user:-WiMetrixDev}
+while [ -z "${frontend_repo}" ]; do
+	echo -e -n "${GREY}Github Repo:${NC} "
+	read -r frontend_repo
+done
+while [ -z "${frontend_token}" ]; do
+	echo -e -n "${GREY}Access Token:${NC} "
+	read -r frontend_token
+done
+
+echo -e "\n${BLUE}-- BACKEND --${NC}"
+echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
+read -r backend_user
+backend_user=${backend_user:-WiMetrixDev}
+while [ -z "${backend_repo}" ]; do
+	echo -e -n "${GREY}Github Repo:${NC} "
+	read -r backend_repo
+done
+while [ -z "${backend_token}" ]; do
+	echo -e -n "${GREY}Access Token:${NC} "
+	read -r backend_token
+done
 
 echo -e "\n${BLUE}Setting Up Frontend Runner...${NC}"
 # Setup frontend action runner
