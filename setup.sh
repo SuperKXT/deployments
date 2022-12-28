@@ -35,7 +35,7 @@ echo -e "${GREEN}Node Installed!${NC}"
 while ! code --version &>/dev/null; do
 	echo -e "\n${BLUE}Downloading VS Code...${NC}"
 	wget 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -O code.deb
-	./code.deb
+	sudo dpkg -i ./code.deb
 	echo -e "${GREEN}VS Code Installed!${NC}"
 done
 
