@@ -27,36 +27,6 @@ While ($true) {
 	}
 }
 
-Write-Host "`n-- FRONTEND --" -ForegroundColor Blue
-Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
-$frontend_user = Read-Host
-If ([string]::IsNullOrWhiteSpace($frontend_user)) {
-	$frontend_user = "WiMetrixDev"
-}
-While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
-	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
-	$frontend_repo = Read-Host
-}
-While ([string]::IsNullOrWhiteSpace($frontend_token)) {
-	Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
-	$frontend_token = Read-Host
-}
-
-Write-Host "`n-- BACKEND --" -ForegroundColor Blue
-Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
-$backend_user = Read-Host
-If ([string]::IsNullOrWhiteSpace($backend_user)) {
-	$backend_user = "WiMetrixDev"
-}
-While ([string]::IsNullOrWhiteSpace($backend_repo)) {
-	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
-	$backend_repo = Read-Host
-}
-While ([string]::IsNullOrWhiteSpace($backend_token)) {
-	Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
-	$backend_token = Read-Host
-}
-
 # Install node
 $retrying = $false
 While ($true) {
@@ -117,6 +87,36 @@ Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.29
 # Optional: Validate the hash
 if ((Get-FileHash -Path runner.zip -Algorithm SHA256).Hash.ToUpper() -ne "f7940b16451d6352c38066005f3ee6688b53971fcc20e4726c7907b32bfdf539".ToUpper()) { throw "Computed checksum did not match" }
 Write-Host "Action Runner Downloaded!" -ForegroundColor Green
+
+Write-Host "`n-- FRONTEND --" -ForegroundColor Blue
+Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
+$frontend_user = Read-Host
+If ([string]::IsNullOrWhiteSpace($frontend_user)) {
+	$frontend_user = "WiMetrixDev"
+}
+While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
+	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
+	$frontend_repo = Read-Host
+}
+While ([string]::IsNullOrWhiteSpace($frontend_token)) {
+	Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
+	$frontend_token = Read-Host
+}
+
+Write-Host "`n-- BACKEND --" -ForegroundColor Blue
+Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
+$backend_user = Read-Host
+If ([string]::IsNullOrWhiteSpace($backend_user)) {
+	$backend_user = "WiMetrixDev"
+}
+While ([string]::IsNullOrWhiteSpace($backend_repo)) {
+	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
+	$backend_repo = Read-Host
+}
+While ([string]::IsNullOrWhiteSpace($backend_token)) {
+	Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
+	$backend_token = Read-Host
+}
 
 Write-Host "`nSetting Up Frontend Runner..." -ForegroundColor Blue
 # Setup frontend action runner
