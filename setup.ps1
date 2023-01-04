@@ -21,7 +21,7 @@ While ($true) {
 		Invoke-WebRequest "https://github.com/git-for-windows/git/releases/download/v2.38.1.windows.1/Git-2.38.1-64-bit.exe" -OutFile git.exe
 		Start-Process -Path git.exe -Wait
 		Remove-Item -Path git.exe
-		$env:Path += ";C:\Program Files\Git\bin\;C:\Program Files\Git\cnd\"
+		$env:Path += ";C:\Program Files\Git\bin\;C:\Program Files\Git\cmd\"
 		Write-Host "Git Installed!" -ForegroundColor Green
 		$retrying = $true
 	}
