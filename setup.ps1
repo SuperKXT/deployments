@@ -10,6 +10,8 @@ While ($true) {
 		if (-not $retrying) {
 			Write-Host "Git is already installed." -ForegroundColor Green
 		}
+		git config --system core.autocrlf input
+		git config --system core.eol lf
 		git config --system core.longpaths true
 		break
 	}
