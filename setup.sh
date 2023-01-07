@@ -5,17 +5,6 @@ GREEN='\e[32m'
 GREY='\e[37m'
 NC='\e[0m'
 
-while ! gh --version; do
-	echo -e "\n${BLUE}Downloading GH CLI...${NC}"
-	type -p curl >/dev/null || sudo apt install curl -y
-	curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg &&
-		sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg &&
-		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null &&
-		sudo apt update &&
-		sudo apt install gh -y
-done
-echo -e "${GREEN}GH CLI Installed!${NC}"
-
 while ! git --version; do
 	echo -e "\n${BLUE}Downloading Git...${NC}"
 	sudo apt update
@@ -60,23 +49,12 @@ cd .. || exit
 rm -rf ./pm2-insaller-main
 echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 
-mkdir frontend
-mkdir backend
-
-echo -e "\n${BLUE}Downloading Github Action Runner...${NC}"
-rm -rf ./runner
-mkdir runner
-cd runner || exit
-git init
-git remote add origin https://github.com/actions/runner
-gh release download -p "*linux-x64-[0-9].[0-9][0-9][0-9].[0-9].tar.gz" -O runner.tar.gz
-tar xzf ./runner.tar.gz
-rm ./runner.tar.gz
-cd ..
-cp -r ./runner/* ./frontend
-cp -r ./runner/* ./backend
-rm -rf ./runner
-echo -e "${GREEN}Action Runner Downloaded!${NC}"
+echo -e "\n${BLUE}-- RUNNER SETUP --${NC}"
+echo -e -n "${GREY}Github Personal Access Token:${NC} "
+read -r token
+export RUNNER_CFG_PAT="$token"
+echo -e -n "${GREY}Please enter the tag to add to the runners [qa, production, dev]:${NC} "
+read -r label
 
 echo -e "\n${BLUE}-- FRONTEND --${NC}"
 echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
@@ -85,10 +63,6 @@ frontend_user=${frontend_user:-WiMetrixDev}
 while [ -z "${frontend_repo}" ]; do
 	echo -e -n "${GREY}Github Repo:${NC} "
 	read -r frontend_repo
-done
-while [ -z "${frontend_token}" ]; do
-	echo -e -n "${GREY}Access Token:${NC} "
-	read -r frontend_token
 done
 
 echo -e "\n${BLUE}-- BACKEND --${NC}"
@@ -99,27 +73,17 @@ while [ -z "${backend_repo}" ]; do
 	echo -e -n "${GREY}Github Repo:${NC} "
 	read -r backend_repo
 done
-while [ -z "${backend_token}" ]; do
-	echo -e -n "${GREY}Access Token:${NC} "
-	read -r backend_token
-done
 
 echo -e "\n${BLUE}Setting Up Frontend Runner...${NC}"
-# Setup frontend action runner
+mkdir frontend
 cd frontend || exit
-./config.sh --url https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token"
-sudo ./svc.sh install
-sudo ./svc.sh start
-sudo ./svc.sh status
+curl -s https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$frontend_user"/"$frontend_repo" -l "$label" -n frontend-"$label"
 cd ..
 echo -e "${GREEN}Frontend Runner Started!${NC}"
 
 echo -e "\n${BLUE}Setting Up Backend Runner...${NC}"
-# Setup backend action runner
+mkdir backend
 cd backend || exit
-./config.sh --url https://github.com/"$backend_user"/"$backend_repo" --token "$backend_token"
-sudo ./svc.sh install
-sudo ./svc.sh start
-sudo ./svc.sh status
+curl -s https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$backend_user"/"$backend_repo" -l "$label" -n backend-"$label"
 cd ..
 echo -e "${GREEN}Backend Runner Started!${NC}\n"
