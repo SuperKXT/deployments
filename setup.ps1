@@ -29,6 +29,27 @@ While ($true) {
 	}
 }
 
+#Install gh
+While ($true) {
+	Try {
+		$null = gh --version
+		if (-not $retrying) {
+			Write-Host "GH CLI is already installed." -ForegroundColor Green
+		}
+		break
+	}
+	Catch [System.Management.Automation.CommandNotFoundException] {
+		if ($retrying) {
+			Throw "GH CLI is not installed, and installation on demand failed."
+		}
+		Write-Host "`nDownloading GH CLI For Windows.." -ForegroundColor Blue
+
+		Write-Host "GH CLI Installed!" -ForegroundColor Green
+		$retrying = $true
+	}
+}
+
+
 # Install node
 $retrying = $false
 While ($true) {
@@ -80,14 +101,23 @@ Remove-Item -Recurse -Path pm2-installer-main
 Write-Host "PM2 Installed! And configured as a service" -ForegroundColor Green
 
 # Create directories
-mkdir frontend
-mkdir backend
+New-Item frontend
+New-Item backend
 
 Write-Host "`nDownloading Github Action Runner..." -ForegroundColor Blue
 # Download the action runner
-Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.299.1/actions-runner-win-x64-2.299.1.zip -OutFile runner.zip
-# Optional: Validate the hash
-if ((Get-FileHash -Path runner.zip -Algorithm SHA256).Hash.ToUpper() -ne "f7940b16451d6352c38066005f3ee6688b53971fcc20e4726c7907b32bfdf539".ToUpper()) { throw "Computed checksum did not match" }
+Remove-Item -Recurse -Path runner
+New-Item runner
+Set-Location runner
+git init
+git remote add origin https://github.com/actions/runner
+gh release download -p "*win-x64-[0-9].[0-9][0-9][0-9].[0-9].zip" -O runner.zip
+Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/runner.zip", "$PWD")
+Remove-Item -Path runner.zip
+Set-Location ..
+Copy-Item -Recurse runner/* frontend/
+Copy-Item -Recurse runner/* backend/
+Remove-item -Recurse -Path runner
 Write-Host "Action Runner Downloaded!" -ForegroundColor Green
 
 Write-Host "`n-- FRONTEND --" -ForegroundColor Blue
@@ -121,23 +151,13 @@ While ([string]::IsNullOrWhiteSpace($backend_token)) {
 }
 
 Write-Host "`nSetting Up Frontend Runner..." -ForegroundColor Blue
-# Setup frontend action runner
-Copy-Item ./runner.zip ./frontend/
 Set-Location frontend
-Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/runner.zip", "$PWD")
-Remove-Item -Path runner.zip
-# Extract the installer
 ./config.cmd --url https://github.com/$frontend_user/$frontend_repo --token $frontend_token
 Set-Location ..
 Write-Host "Frontend Runner Started!" -ForegroundColor Green
 
 rite-Host "`nSetting Up Backend Runner..." -ForegroundColor Blue
-# Setup frontend action runner
-Copy-Item ./runner.zip ./backend/
 Set-Location backend
-Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/runner.zip", "$PWD")
-Remove-Item -Path runner.zip
-# Extract the installer
 ./config.cmd --url https://github.com/$backend_user/$backend_repo --token $backend_token
 Set-Location ..
 Write-Host "Backend Runner Started!" -ForegroundColor Green

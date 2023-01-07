@@ -6,6 +6,7 @@ GREY='\e[37m'
 NC='\e[0m'
 
 while ! gh --version; do
+	echo -e "\n${BLUE}Downloading GH CLI...${NC}"
 	type -p curl >/dev/null || sudo apt install curl -y
 	curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg &&
 		sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg &&
@@ -62,24 +63,20 @@ echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 mkdir frontend
 mkdir backend
 
-if ! test -f "runner/runner.tar.gz"; then
-	echo -e "\n${BLUE}Downloading Github Action Runner...${NC}"
-	rm -rf ./runner
-	mkdir runner
-	cd runner || exit
-	git init
-	git remote add origin https://github.com/actions/runner
-	gh release download -p "*linux-x64-([0-9.]+).tar.gz" -O runner.tar.gz
-	tar xzf ./runner.tar.gz
-	rm ./runner.tar.gz
-	cd ..
-	cp -r ./runner/* ./frontend
-	cp -r ./runner/* ./backend
-	rm -rf ./runner
-	echo -e "${GREEN}Action Runner Downloaded!${NC}"
-else
-	echo -e "${GREEN}Action Runner Already Downloaded!${NC}"
-fi
+echo -e "\n${BLUE}Downloading Github Action Runner...${NC}"
+rm -rf ./runner
+mkdir runner
+cd runner || exit
+git init
+git remote add origin https://github.com/actions/runner
+gh release download -p "*linux-x64-[0-9].[0-9][0-9][0-9].[0-9].tar.gz" -O runner.tar.gz
+tar xzf ./runner.tar.gz
+rm ./runner.tar.gz
+cd ..
+cp -r ./runner/* ./frontend
+cp -r ./runner/* ./backend
+rm -rf ./runner
+echo -e "${GREEN}Action Runner Downloaded!${NC}"
 
 echo -e "\n${BLUE}-- FRONTEND --${NC}"
 echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
