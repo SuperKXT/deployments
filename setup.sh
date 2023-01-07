@@ -5,15 +5,23 @@ GREEN='\e[32m'
 GREY='\e[37m'
 NC='\e[0m'
 
-# install nvm
+while ! gh --version; do
+	echo -e "\n${BLUE}Downloading GH CLI...${NC}"
+	type -p curl >/dev/null || sudo apt install curl -y
+	curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg &&
+		sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg &&
+		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null &&
+		sudo apt update &&
+		sudo apt install gh -y
+done
+echo -e "${GREEN}GH CLI Installed!${NC}"
+
 while ! git --version; do
 	echo -e "\n${BLUE}Downloading Git...${NC}"
 	sudo apt update
 	sudo apt install git-all
 done
 echo -e "${GREEN}Git Installed!${NC}"
-
-# install nvm
 
 while ! nvm --version; do
 	echo -e "\n${BLUE}Downloading NVM...${NC}"
@@ -55,16 +63,20 @@ echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 mkdir frontend
 mkdir backend
 
-if ! test -f "runner.tar.gz"; then
-	# Download the action runner
-	echo -e "\n${BLUE}Downloading Github Action Runner...${NC}"
-	curl -o runner.tar.gz -L https://github.com/actions/runner/releases/download/v2.299.1/actions-runner-linux-x64-2.299.1.tar.gz
-	# Optional: Validate the hash
-	echo "147c14700c6cb997421b9a239c012197f11ea9854cd901ee88ead6fe73a72c74  runner.tar.gz" | shasum -a 256 -c
-	echo -e "${GREEN}Action Runner Downloaded!${NC}"
-else
-	echo -e "${GREEN}Action Runner Already Downloaded!${NC}"
-fi
+echo -e "\n${BLUE}Downloading Github Action Runner...${NC}"
+rm -rf ./runner
+mkdir runner
+cd runner || exit
+git init
+git remote add origin https://github.com/actions/runner
+gh release download -p "*linux-x64-[0-9].[0-9][0-9][0-9].[0-9].tar.gz" -O runner.tar.gz
+tar xzf ./runner.tar.gz
+rm ./runner.tar.gz
+cd ..
+cp -r ./runner/* ./frontend
+cp -r ./runner/* ./backend
+rm -rf ./runner
+echo -e "${GREEN}Action Runner Downloaded!${NC}"
 
 echo -e "\n${BLUE}-- FRONTEND --${NC}"
 echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
@@ -94,10 +106,7 @@ done
 
 echo -e "\n${BLUE}Setting Up Frontend Runner...${NC}"
 # Setup frontend action runner
-cp -r ./runner.tar.gz ./frontend
 cd frontend || exit
-tar xzf ./runner.tar.gz
-rm ./runner.tar.gz
 ./config.sh --url https://github.com/"$frontend_user"/"$frontend_repo" --token "$frontend_token"
 sudo ./svc.sh install
 sudo ./svc.sh start
@@ -107,10 +116,7 @@ echo -e "${GREEN}Frontend Runner Started!${NC}"
 
 echo -e "\n${BLUE}Setting Up Backend Runner...${NC}"
 # Setup backend action runner
-cp -r ./runner.tar.gz ./backend
 cd backend || exit
-tar xzf ./runner.tar.gz
-rm ./runner.tar.gz
 ./config.sh --url https://github.com/"$backend_user"/"$backend_repo" --token "$backend_token"
 sudo ./svc.sh install
 sudo ./svc.sh start
