@@ -5,10 +5,10 @@ github actions on Windows or Linux
 
 ## Details
 
+- Installs git
 - `(Linux only)` Installs nvm
 - Installs Node.js `(with nvm on Linux)`
 - Enables corepack and updates pnpm
-- `(Windows only)` Installs git
 - Installs VS Code
 - Installs and sets up pm2 as as service with
   [`pm2-installer`](https://github.com/jessety/pm2-installer)
@@ -34,11 +34,8 @@ Download the repository
 git clone https://github.com/SuperKXT/deployments
 ```
 
-Get the frontend and backend runner tokens
-
-- Go to `github.com/{user}/{repo}/settings/actions/runners/new`
-- Copy the token from the end of first command in the Configure
-  section ![image](./images/token.png)
+Get a Personal Access Token for the account where the repositories exist.
+The token must have `repo` access.
 
 Run the script
 
@@ -55,8 +52,12 @@ chmod u+x ./setup.sh
 ./setup.sh
 ```
 
-When prompted provide the frontend and backend config
+Add the appropriate tags to the runner (`dev`, `qa`, or `production`)
 
-Add the appropriate tags to the runner (`production` or `qa`)
+When prompted provide the frontend and backend user and repo name
 
 If on Windows, Start both runners as a windows service
+
+---
+Check out the automated scripts here for more information:
+<https://github.com/actions/runner/blob/main/docs/automate.md>
