@@ -29,27 +29,6 @@ While ($true) {
 	}
 }
 
-#Install gh
-While ($true) {
-	Try {
-		$null = gh --version
-		if (-not $retrying) {
-			Write-Host "GH CLI is already installed." -ForegroundColor Green
-		}
-		break
-	}
-	Catch [System.Management.Automation.CommandNotFoundException] {
-		if ($retrying) {
-			Throw "GH CLI is not installed, and installation on demand failed."
-		}
-		Write-Host "`nDownloading GH CLI For Windows.." -ForegroundColor Blue
-
-		Write-Host "GH CLI Installed!" -ForegroundColor Green
-		$retrying = $true
-	}
-}
-
-
 # Install node
 $retrying = $false
 While ($true) {
@@ -100,25 +79,37 @@ Set-Location ..
 Remove-Item -Recurse -Path pm2-installer-main
 Write-Host "PM2 Installed! And configured as a service" -ForegroundColor Green
 
-# Create directories
-New-Item frontend
-New-Item backend
-
 Write-Host "`nDownloading Github Action Runner..." -ForegroundColor Blue
-# Download the action runner
-Remove-Item -Recurse -Path runner
-New-Item runner
-Set-Location runner
-git init
-git remote add origin https://github.com/actions/runner
-gh release download -p "*win-x64-[0-9].[0-9][0-9][0-9].[0-9].zip" -O runner.zip
-Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/runner.zip", "$PWD")
-Remove-Item -Path runner.zip
-Set-Location ..
-Copy-Item -Recurse runner/* frontend/
-Copy-Item -Recurse runner/* backend/
-Remove-item -Recurse -Path runner
+$response = Invoke-RestMethod "https://api.github.com/repos/actions/runner/releases/latest"
+$latest_version_label = $response.tag_name
+$latest_version = $latest_version_label.substring(1)
+$runner_file = "actions-runner-win-x64-${latest_version}.zip"
+If (-not (Test-Path $runner_file)) {
+	$runner_url = "https://github.com/actions/runner/releases/download/${latest_version_label}/${runner_file}"
+	Write-Host "Downloading $latest_version_label..." -ForegroundColor Blue
+	Write-Host $runner_url -ForegroundColor Blue
+
+	Invoke-WebRequest $runner_url -O $runner_file
+}
+Else {
+	Write-Host "`n$($runner_file) exists. skipping download." -ForegroundColor Blue
+}
+Remove-Item -Recurse -Path frontend
+Remove-Item -Recurse -Path backend
+New-Item -ItemType Directory frontend
+New-Item -ItemType Directory backend
+Copy-Item ./$runner_file frontend/
+Copy-Item ./$runner_file backend/
+Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/frontend/$runner_file", "$PWD/frontend")
+Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/backend/$runner_file", "$PWD/backend")
 Write-Host "Action Runner Downloaded!" -ForegroundColor Green
+
+Write-Host "`n-- RUNNER SETUP --" -ForegroundColor Blue
+Write-Host "Github Personal Access Token: "  -ForegroundColor Gray -NoNewline
+$token = Read-Host
+Write-Host "Please enter the tag to add to the runners [qa, production, dev]: "  -ForegroundColor Gray -NoNewline
+$label = Read-Host
+Write-Host "$token"
 
 Write-Host "`n-- FRONTEND --" -ForegroundColor Blue
 Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
@@ -129,10 +120,6 @@ If ([string]::IsNullOrWhiteSpace($frontend_user)) {
 While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
 	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
 	$frontend_repo = Read-Host
-}
-While ([string]::IsNullOrWhiteSpace($frontend_token)) {
-	Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
-	$frontend_token = Read-Host
 }
 
 Write-Host "`n-- BACKEND --" -ForegroundColor Blue
@@ -145,19 +132,36 @@ While ([string]::IsNullOrWhiteSpace($backend_repo)) {
 	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
 	$backend_repo = Read-Host
 }
-While ([string]::IsNullOrWhiteSpace($backend_token)) {
-	Write-Host "Access Token: " -ForegroundColor Gray -NoNewline
-	$backend_token = Read-Host
-}
 
 Write-Host "`nSetting Up Frontend Runner..." -ForegroundColor Blue
+Write-Host "Generating a registration token..."
+$frontend_api_url = "https://api.github.com/repos/$frontend_user/$frontend_repo/actions/runners/registration-token"
+$frontend_response = Invoke-RestMethod -Method Post -Uri $frontend_api_url -Headers @{authorization = "token $token" }
+$frontend_token = $frontend_response.token
+if ($null -eq $frontend_token) {
+	Write-Host "Failed to get a token"
+	Exit-PSSession
+}
+Write-Host "$frontend_token"
 Set-Location frontend
-./config.cmd --url https://github.com/$frontend_user/$frontend_repo --token $frontend_token
+.\config.cmd --unattended --url https://github.com/$frontend_user/$frontend_repo --token $token --name frontend-$label --labels $label --work _work
+.\svc.ps1 install
+.\svc.ps1 start
 Set-Location ..
 Write-Host "Frontend Runner Started!" -ForegroundColor Green
 
-rite-Host "`nSetting Up Backend Runner..." -ForegroundColor Blue
+Write-Host "`nSetting Up Backend Runner..." -ForegroundColor Blue
+Write-Host "Generating a registration token..."
+$backend_api_url = "https://api.github.com/repos/$backend_user/$backend_repo/actions/runners/registration-token"
+$backend_response = Invoke-RestMethod -Method Post -Uri $backend_api_url -Headers @{authorization = "token $token" }
+$backend_token = $backend_response.token
+if ($null -eq $backend_token) {
+	Write-Host "Failed to get a token"
+	Exit-PSSession
+}
 Set-Location backend
-./config.cmd --url https://github.com/$backend_user/$backend_repo --token $backend_token
+.\config.cmd --unattended --url https://github.com/$backend_user/$backend_repo --token $token --name backend-$label --labels $label --work _work
+.\svc.ps1 install
+.\svc.ps1 start
 Set-Location ..
 Write-Host "Backend Runner Started!" -ForegroundColor Green
