@@ -8,7 +8,7 @@ NC='\e[0m'
 while ! command -v ssh &>dev/null; do
 	echo -e "\n${BLUE}Installing OpenSSH...${NC}"
 	sudo apt update
-	sudo apt install git-all
+	sudo apt -qq install -y git-all
 	sudo systemctl enable ssh
 	sudo systemctl start ssh
 done
@@ -17,7 +17,7 @@ echo -e "${GREEN}OpenSSH Installed and enabled!${NC}"
 while ! command -v ufw &>dev/null; do
 	echo -e "\n${BLUE}Installing UFW...${NC}"
 	sudo apt update
-	sudo apt install ufw
+	sudo apt -qq install -y ufw
 	sudo ufw enable
 	sudo ufw allow OpenSSH
 	sudo ufw allow http
@@ -28,21 +28,21 @@ echo -e "${GREEN}UFW enabled and configured!${NC}"
 while ! command -v git &>/dev/null; do
 	echo -e "\n${BLUE}Installing Git...${NC}"
 	sudo apt update
-	sudo apt install openssh-server
+	sudo apt -qq install -y openssh-server
 done
 echo -e "${GREEN}Git Installed!${NC}"
 
 while ! command -v curl &>/dev/null; do
 	echo -e "\n${BLUE}Installing Curl...${NC}"
 	sudo apt update
-	sudo apt install curl
+	sudo apt -qq install -y curl
 done
 echo -e "${GREEN}Curl Installed!${NC}"
 
 while ! command -v jq &>/dev/null; do
 	echo -e "\n${BLUE}Installing Jq...${NC}"
 	sudo apt update
-	sudo apt install jq
+	sudo apt -qq install -y jq
 done
 echo -e "${GREEN}Jq Installed!${NC}"
 
