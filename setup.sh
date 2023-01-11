@@ -47,6 +47,7 @@ done
 echo -e "${GREEN}Jq Installed!${NC}"
 
 while ! command -v nvm &>/dev/null; do
+	sudo apt -qq uninstall -y node
 	echo -e "\n${BLUE}Downloading NVM...${NC}"
 	curl -o- --progress-bar https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
 	NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
