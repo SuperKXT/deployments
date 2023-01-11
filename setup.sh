@@ -1,26 +1,46 @@
-t#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 BLUE='\e[34m'
 GREEN='\e[32m'
 GREY='\e[37m'
 NC='\e[0m'
 
-while ! command -v git &>/dev/null; do
-	echo -e "\n${BLUE}Downloading Git...${NC}"
+while ! command -v ssh &>dev/null; do
+	echo -e "\n${BLUE}Installing OpenSSH...${NC}"
 	sudo apt update
 	sudo apt install git-all
+	sudo systemctl enable ssh
+	sudo systemctl start ssh
+done
+echo -e "${GREEN}OpenSSH Installed and enabled!${NC}"
+
+while ! command -v ufw &>dev/null; do
+	echo -e "\n${BLUE}Installing UFW...${NC}"
+	sudo apt update
+	sudo apt install ufw
+	sudo ufw enable
+	sudo ufw allow OpenSSH
+	sudo ufw allow http
+	sudo ufw allow https
+done
+echo -e "${GREEN}UFW enabled and configured!${NC}"
+
+while ! command -v git &>/dev/null; do
+	echo -e "\n${BLUE}Installing Git...${NC}"
+	sudo apt update
+	sudo apt install openssh-server
 done
 echo -e "${GREEN}Git Installed!${NC}"
 
 while ! command -v curl &>/dev/null; do
-	echo -e "\n${BLUE}Downloading Curl...${NC}"
+	echo -e "\n${BLUE}Installing Curl...${NC}"
 	sudo apt update
 	sudo apt install curl
 done
 echo -e "${GREEN}Curl Installed!${NC}"
 
 while ! command -v jq &>/dev/null; do
-	echo -e "\n${BLUE}Downloading Jq...${NC}"
+	echo -e "\n${BLUE}Installing Jq...${NC}"
 	sudo apt update
 	sudo apt install jq
 done
