@@ -1,20 +1,27 @@
-#!/usr/bin/env bash
+t#!/usr/bin/env bash
 
 BLUE='\e[34m'
 GREEN='\e[32m'
 GREY='\e[37m'
 NC='\e[0m'
 
-while ! git --version; do
+while ! command -v git &>/dev/null; do
 	echo -e "\n${BLUE}Downloading Git...${NC}"
 	sudo apt update
 	sudo apt install git-all
 done
 echo -e "${GREEN}Git Installed!${NC}"
 
-while ! nvm --version; do
+while ! command -v curl &>/dev/null; do
+	echo -e "\n${BLUE}Downloading Curl...${NC}"
+	sudo apt update
+	sudo apt install curl
+done
+echo -e "${GREEN}Curl Installed!${NC}"
+
+while ! command -v nvm &>/dev/null; do
 	echo -e "\n${BLUE}Downloading NVM...${NC}"
-	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+	curl -o- --progress-bar https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
 	NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 	export NVM_DIR
 	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
@@ -29,16 +36,16 @@ corepack enable
 corepack prepare pnpm@latest --activate
 echo -e "${GREEN}Node Installed!${NC}"
 
-while ! code --version &>/dev/null; do
+while ! command -v code &>/dev/null; do
 	echo -e "\n${BLUE}Downloading VS Code...${NC}"
-	wget 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -O code.deb
+	wget -q --show-progress 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -O code.deb
 	sudo dpkg -i ./code.deb
 	echo -e "${GREEN}VS Code Installed!${NC}"
 done
 
 if ! test -f "pm2-install-main"; then
 	echo -e "\n${BLUE}Download PM2...${NC}"
-	wget https://github.com/jessety/pm2-installer/archive/main.zip
+	wget -q --show-progress https://github.com/jessety/pm2-installer/archive/main.zip -O main.zip
 	unzip main.zip
 	rm -f main.zip
 fi
@@ -46,7 +53,7 @@ cd pm2-installer-main || exit
 npm run configure
 npm run setup
 cd .. || exit
-rm -rf ./pm2-insaller-main
+rm -rf ./pm2-insalle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r-main
 echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 
 echo -e "\n${BLUE}-- RUNNER SETUP --${NC}"
@@ -77,13 +84,13 @@ done
 echo -e "\n${BLUE}Setting Up Frontend Runner...${NC}"
 mkdir frontend
 cd frontend || exit
-curl -s https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$frontend_user"/"$frontend_repo" -l "$label" -n frontend-"$label"
+curl --progress-bar https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$frontend_user"/"$frontend_repo" -l "$label" -n frontend-"$label"
 cd ..
 echo -e "${GREEN}Frontend Runner Started!${NC}"
 
 echo -e "\n${BLUE}Setting Up Backend Runner...${NC}"
 mkdir backend
 cd backend || exit
-curl -s https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$backend_user"/"$backend_repo" -l "$label" -n backend-"$label"
+curl --progress-bar https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$backend_user"/"$backend_repo" -l "$label" -n backend-"$label"
 cd ..
 echo -e "${GREEN}Backend Runner Started!${NC}\n"
