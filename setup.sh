@@ -84,6 +84,12 @@ cd .. || exit
 rm -rf ./pm2-insalle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r-main
 echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 
+# Copy node libs to usr/local/bin to enable use with sudo
+node_version="$(node --version)"
+for name in node npm pnpm pm2; do
+	sudo ln -s "$NVM_DIR/versions/node/$node_version/bin" "/usr/local/bin/$name"
+done
+
 echo -e "\n${BLUE}-- RUNNER SETUP --${NC}"
 echo -e -n "${GREY}Github Personal Access Token:${NC} "
 read -r token
