@@ -5,7 +5,7 @@ GREEN='\e[32m'
 GREY='\e[37m'
 NC='\e[0m'
 
-while ! command -v ssh &>dev/null; do
+while ! command -v ssh &>/dev/null; do
 	echo -e "\n${BLUE}Installing OpenSSH...${NC}"
 	sudo apt update
 	sudo apt -qq install -y git-all
@@ -14,7 +14,7 @@ while ! command -v ssh &>dev/null; do
 done
 echo -e "${GREEN}OpenSSH Installed and enabled!${NC}"
 
-while ! command -v ufw &>dev/null; do
+while ! command -v ufw &>/dev/null; do
 	echo -e "\n${BLUE}Installing UFW...${NC}"
 	sudo apt update
 	sudo apt -qq install -y ufw
