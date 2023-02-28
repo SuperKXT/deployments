@@ -86,8 +86,8 @@ echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 
 # Copy node libs to usr/local/bin to enable use with sudo
 node_version="$(node --version)"
-for name in node npm pnpm pm2; do
-	sudo ln -s "$NVM_DIR/versions/node/$node_version/bin" "/usr/local/bin/$name"
+for name in node npm pnpm yarn pm2; do
+	sudo ln -s "$NVM_DIR/versions/node/$node_version/bin/$name" "/usr/local/bin/$name"
 done
 
 echo -e "\n${BLUE}-- RUNNER SETUP --${NC}"
