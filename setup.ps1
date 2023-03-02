@@ -144,7 +144,7 @@ if ($null -eq $frontend_token) {
 }
 Write-Host "$frontend_token"
 Set-Location frontend
-.\config.cmd --unattended --url https://github.com/$frontend_user/$frontend_repo --token $token --name frontend-$label --labels $label --work _work
+.\config.cmd --unattended --url https://github.com/$frontend_user/$frontend_repo --token $frontend_token --name frontend-$label --labels $label --work _work
 .\svc.ps1 install
 .\svc.ps1 start
 Set-Location ..
@@ -160,7 +160,7 @@ if ($null -eq $backend_token) {
 	Exit-PSSession
 }
 Set-Location backend
-.\config.cmd --unattended --url https://github.com/$backend_user/$backend_repo --token $token --name backend-$label --labels $label --work _work
+.\config.cmd --unattended --url https://github.com/$backend_user/$backend_repo --token $backend_token --name backend-$label --labels $label --work _work
 .\svc.ps1 install
 .\svc.ps1 start
 Set-Location ..
