@@ -8,13 +8,13 @@ NC='\e[0m'
 while ! command -v ssh &>/dev/null; do
 	echo -e "\n${BLUE}Installing OpenSSH...${NC}"
 	sudo apt update
-	sudo apt -qq install -y git-all
+	sudo apt -qq install -y openssh-server
 	sudo systemctl enable ssh
 	sudo systemctl start ssh
 done
 echo -e "${GREEN}OpenSSH Installed and enabled!${NC}"
 
-while ! command -v ufw &>/dev/null; do
+while ! command -v -p /usr/sbin/ufw ufw &>/dev/null; do
 	echo -e "\n${BLUE}Installing UFW...${NC}"
 	sudo apt update
 	sudo apt -qq install -y ufw
@@ -28,7 +28,7 @@ echo -e "${GREEN}UFW enabled and configured!${NC}"
 while ! command -v git &>/dev/null; do
 	echo -e "\n${BLUE}Installing Git...${NC}"
 	sudo apt update
-	sudo apt -qq install -y openssh-server
+	sudo apt -qq install -y git-all
 done
 echo -e "${GREEN}Git Installed!${NC}"
 
