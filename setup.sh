@@ -82,6 +82,7 @@ npm run configure
 npm run setup
 cd .. || exit
 rm -rf ./pm2-insalle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r-main
+pm2 completion install
 echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 
 # Copy node libs to usr/local/bin to enable use with sudo
