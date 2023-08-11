@@ -64,6 +64,13 @@ Start-Process -Path code.exe -Wait
 Remove-Item -Path code.exe
 Write-Host "VS Code Installed!" -ForegroundColor Green
 
+# Install Postman
+Write-Host "`nDownloading Postman..." -ForegroundColor Blue
+Invoke-WebRequest "https://dl.pstmn.io/download/latest/win64" -OutFile postman.exe
+Start-Process -Path postman.exe -Wait
+Remove-Item -Path postman.exe
+Write-Host "Postman Installed!" -ForegroundColor Green
+
 # Install PM2 https://github.com/jessety/pm2-installer
 Write-Host "`nDownloading PM2..." -ForegroundColor Blue
 Invoke-WebRequest "https://github.com/jessety/pm2-installer/archive/main.zip" -OutFile pm2.zip
