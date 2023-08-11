@@ -71,6 +71,13 @@ while ! command -v code &>/dev/null; do
 	echo -e "${GREEN}VS Code Installed!${NC}"
 done
 
+#install postman
+if ! command -v postman &>/dev/null; then
+	echo -e "\n${BLUE}Downloading Postman...${NC}"
+	curl https://gist.githubusercontent.com/SanderTheDragon/1331397932abaa1d6fbbf63baed5f043/raw/postman-deb.sh | sh
+ 	echo -e "${GREEN}Postman Installed!${NC}"
+fi
+
 if ! test -f "pm2-install-main"; then
 	echo -e "\n${BLUE}Download PM2...${NC}"
 	wget -q --show-progress https://github.com/jessety/pm2-installer/archive/main.zip -O main.zip
