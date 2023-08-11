@@ -10,6 +10,7 @@ github actions on Windows or Linux
 - Installs Node.js `(with nvm on Linux)`
 - Enables corepack and updates pnpm
 - Installs VS Code
+- Install Postman
 - Installs and sets up pm2 as as service with
   [`pm2-installer`](https://github.com/jessety/pm2-installer)
 - Sets up Github Action Runners for frontend and backend as a service
