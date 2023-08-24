@@ -22,6 +22,8 @@ while ! command -v -p /usr/sbin/ufw ufw &>/dev/null; do
 	sudo ufw allow OpenSSH
 	sudo ufw allow http
 	sudo ufw allow https
+ 	sudo ufw allow 4000:4010/tcp
+	sudo ufw allow 5000:5010/udp
 done
 echo -e "${GREEN}UFW enabled and configured!${NC}"
 
