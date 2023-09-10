@@ -31,6 +31,7 @@ while ! command -v git &>/dev/null; do
 	echo -e "\n${BLUE}Installing Git...${NC}"
 	sudo apt update
 	sudo apt -qq install -y git-all
+ 	git config core.longpaths true
 done
 echo -e "${GREEN}Git Installed!${NC}"
 
