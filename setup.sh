@@ -18,21 +18,21 @@ while ! command -v -p /usr/sbin/ufw ufw &>/dev/null; do
 	echo -e "\n${BLUE}Installing UFW...${NC}"
 	sudo apt update
 	sudo apt -qq install -y ufw
-	sudo ufw enable
-	sudo ufw allow OpenSSH
-	sudo ufw allow http
-	sudo ufw allow https
- 	sudo ufw allow 4000:4010/tcp
-	sudo ufw allow 5000:5010/udp
 done
+sudo ufw enable
+sudo ufw allow OpenSSH
+sudo ufw allow http
+sudo ufw allow https
+sudo ufw allow 4000:4010/tcp
+sudo ufw allow 5000:5010/udp
 echo -e "${GREEN}UFW enabled and configured!${NC}"
 
 while ! command -v git &>/dev/null; do
 	echo -e "\n${BLUE}Installing Git...${NC}"
 	sudo apt update
 	sudo apt -qq install -y git-all
- 	git config core.longpaths true
 done
+git config core.longpaths true
 echo -e "${GREEN}Git Installed!${NC}"
 
 while ! command -v curl &>/dev/null; do
@@ -78,7 +78,7 @@ done
 if ! command -v postman &>/dev/null; then
 	echo -e "\n${BLUE}Downloading Postman...${NC}"
 	curl https://gist.githubusercontent.com/SanderTheDragon/1331397932abaa1d6fbbf63baed5f043/raw/postman-deb.sh | sh
- 	echo -e "${GREEN}Postman Installed!${NC}"
+	echo -e "${GREEN}Postman Installed!${NC}"
 fi
 
 if ! test -f "pm2-install-main"; then
@@ -91,7 +91,7 @@ cd pm2-installer-main || exit
 npm run configure
 npm run setup
 cd .. || exit
-rm -rf ./pm2-insalle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r-main
+rm -rf ./pm2-insaller-main
 pm2 completion install
 echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 
