@@ -48,7 +48,7 @@ While ($true) {
 		if ($retrying) {
 			Throw "Node is not installed, and installation on demand failed."
 		}
-		WWrite-Host "`nDownloading Node js..." -ForegroundColor Blue
+		Write-Host "`nDownloading Node js..." -ForegroundColor Blue
 		Invoke-WebRequest "https://nodejs.org/dist/v18.12.1/node-v18.12.1-x86.msi" -OutFile node.msi
 		Start-Process -Path node.msi -Wait
 		Remove-Item -Path node.msi

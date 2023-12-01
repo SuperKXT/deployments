@@ -24,7 +24,7 @@ sudo ufw allow OpenSSH
 sudo ufw allow http
 sudo ufw allow https
 sudo ufw allow 4000:4010/tcp
-sudo ufw allow 5000:5010/udp
+sudo ufw allow 5000:5010/tcp
 echo -e "${GREEN}UFW enabled and configured!${NC}"
 
 while ! command -v git &>/dev/null; do
