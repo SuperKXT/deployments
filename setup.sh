@@ -67,10 +67,12 @@ corepack enable
 corepack prepare pnpm@latest --activate
 echo -e "${GREEN}Node Installed!${NC}"
 
+# install vs code
 while ! command -v code &>/dev/null; do
 	echo -e "\n${BLUE}Downloading VS Code...${NC}"
 	wget -q --show-progress 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -O code.deb
-	sudo dpkg -i ./code.deb
+	sudo apt -qq install -y ./code.deb
+	rm ./code.deb
 	echo -e "${GREEN}VS Code Installed!${NC}"
 done
 
@@ -79,6 +81,15 @@ if ! command -v postman &>/dev/null; then
 	echo -e "\n${BLUE}Downloading Postman...${NC}"
 	curl https://gist.githubusercontent.com/SanderTheDragon/1331397932abaa1d6fbbf63baed5f043/raw/postman-deb.sh | sh
 	echo -e "${GREEN}Postman Installed!${NC}"
+fi
+
+# install azure data studio
+if ! command -v azuredatastudio &>/dev/null; then
+	echo -e "\n${BLUE}Installing Azure Data Studio...${NC}"
+	wget -q --show-progress https://go.microsoft.com/fwlink/?linkid=2215528 -O ./azure.deb
+	sudo apt -qq install -y ./azure.deb
+	rm ./azure.deb
+	echo -e "${GREEN}Azure Data Studio Installed!${NC}"
 fi
 
 if ! test -f "pm2-install-main"; then
