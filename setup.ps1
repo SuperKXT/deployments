@@ -3,8 +3,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 [Net.ServicePointManager]::SecurityProtocol = "Tls, Tls11, Tls12, Ssl3"
 
 # Open Required ports in Firewall
-New-NetFirewallRule -DisplayName 'App Ports (TCP)' -Profile 'Private' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 4000-4010, 5000-5010
-New-NetFirewallRule -DisplayName 'App Ports (UDP)' -Profile 'Private' -Direction Inbound -Action Allow -Protocol UDP -LocalPort 4000-4010, 5000-5010
+New-NetFirewallRule -DisplayName 'App Ports (TCP)' -Profile 'Private' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 3000-3010, 4000-4010, 5000-5010
 
 # Install Git
 $retrying = $false
