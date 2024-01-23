@@ -5,6 +5,13 @@ GREEN='\e[32m'
 GREY='\e[37m'
 NC='\e[0m'
 
+while ! command -v unzip &>/dev/null; do
+	echo -e "\n${BLUE}Installing unzip...${NC}"
+	sudo apt update
+	sudo apt -qq install -y unzip
+done
+echo -e "${GREEN}unzip Installed and enabled!${NC}"
+
 while ! command -v ssh &>/dev/null; do
 	echo -e "\n${BLUE}Installing OpenSSH...${NC}"
 	sudo apt update
