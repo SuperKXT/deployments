@@ -156,70 +156,54 @@ If (-not (Test-Path $runner_file)) {
 Else {
 	Write-Host "`n$($runner_file) exists. skipping download." -ForegroundColor Cyan
 }
-Remove-Item -Recurse -Path frontend
-Remove-Item -Recurse -Path backend
-New-Item -ItemType Directory frontend
-New-Item -ItemType Directory backend
-Copy-Item ./$runner_file frontend/
-Copy-Item ./$runner_file backend/
-Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/frontend/$runner_file", "$PWD/frontend")
-Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/backend/$runner_file", "$PWD/backend")
 Write-Host "Action Runner Downloaded!" -ForegroundColor Green
 
-Write-Host "`n-- RUNNER SETUP --" -ForegroundColor Cyan
 Write-Host "Github Personal Access Token: "  -ForegroundColor Gray -NoNewline
 $token = Read-Host
-Write-Host "Please enter the tag to add to the runners [qa, production, dev]: "  -ForegroundColor Gray -NoNewline
-$label = Read-Host
-Write-Host "$token"
 
-Write-Host "`n-- FRONTEND --" -ForegroundColor Cyan
-Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
-$frontend_user = Read-Host
-If ([string]::IsNullOrWhiteSpace($frontend_user)) {
-	$frontend_user = "WiMetrixDev"
-}
-While ([string]::IsNullOrWhiteSpace($frontend_repo)) {
-	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
-	$frontend_repo = Read-Host
-}
+$title   = 'Add Another?'
+$msg     = 'Do you want to setup another action runner?'
+$options = '&Yes', '&No'
+$default = 1  # 0=Yes, 1=No
 
-Write-Host "`n-- BACKEND --" -ForegroundColor Cyan
-Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
-$backend_user = Read-Host
-If ([string]::IsNullOrWhiteSpace($backend_user)) {
-	$backend_user = "WiMetrixDev"
-}
-While ([string]::IsNullOrWhiteSpace($backend_repo)) {
-	Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
-	$backend_repo = Read-Host
-}
+do {
+	Write-Host "`n-- RUNNER SETUP --" -ForegroundColor Cyan
 
-Write-Host "`nSetting Up Frontend Runner..." -ForegroundColor Cyan
-Write-Host "Generating a registration token..."
-$frontend_api_url = "https://api.github.com/repos/$frontend_user/$frontend_repo/actions/runners/registration-token"
-$frontend_response = Invoke-RestMethod -Method Post -Uri $frontend_api_url -Headers @{authorization = "token $token" }
-$frontend_token = $frontend_response.token
-if ($null -eq $frontend_token) {
-	Write-Host "Failed to get a token"
-	Exit-PSSession
-}
-Write-Host "$frontend_token"
-Set-Location frontend
-.\config.cmd --unattended --url https://github.com/$frontend_user/$frontend_repo --token $frontend_token --name frontend-$label --labels $label --work _work --runasservice
-Set-Location ..
-Write-Host "Frontend Runner Started!" -ForegroundColor Green
+	Write-Host "Enter the name for the runner:"  -ForegroundColor Gray -NoNewline
+	$folder = Read-Host
 
-Write-Host "`nSetting Up Backend Runner..." -ForegroundColor Cyan
-Write-Host "Generating a registration token..."
-$backend_api_url = "https://api.github.com/repos/$backend_user/$backend_repo/actions/runners/registration-token"
-$backend_response = Invoke-RestMethod -Method Post -Uri $backend_api_url -Headers @{authorization = "token $token" }
-$backend_token = $backend_response.token
-if ($null -eq $backend_token) {
-	Write-Host "Failed to get a token"
-	Exit-PSSession
-}
-Set-Location backend
-.\config.cmd --unattended --url https://github.com/$backend_user/$backend_repo --token $backend_token --name backend-$label --labels $label --work _work --runasservice
-Set-Location ..
-Write-Host "Backend Runner Started!" -ForegroundColor Green
+	Remove-Item -Recurse -Path $folder
+	New-Item -ItemType Directory $folder
+	Copy-Item ./$runner_file $folder/
+	Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/$folder/$runner_file", "$PWD/$folder")
+
+	Write-Host "Please enter the tag to add to the runner [qa, production, dev]: "  -ForegroundColor Gray -NoNewline
+	$label = Read-Host
+	Write-Host "$token"
+
+	Write-Host "Github User [WiMetrixDev]: " -ForegroundColor Gray -NoNewline
+	$user = Read-Host
+	If ([string]::IsNullOrWhiteSpace($user)) {
+		$user = "WiMetrixDev"
+	}
+	While ([string]::IsNullOrWhiteSpace($repo)) {
+		Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
+		$repo = Read-Host
+	}
+
+	Write-Host "Generating a registration token..."
+	$api_url = "https://api.github.com/repos/$user/$repo/actions/runners/registration-token"
+	$response = Invoke-RestMethod -Method Post -Uri $api_url -Headers @{authorization = "token $token" }
+	$token = $response.token
+	if ($null -eq $token) {
+		Write-Host "Failed to get a token"
+		Exit-PSSession
+	}
+	Write-Host "$token"
+	Set-Location $folder
+	.\config.cmd --unattended --url https://github.com/$user/$repo --token $token --name $folder-$label --labels $label --work _work --runasservice
+	Set-Location ..
+	Write-Host "Runner Started!" -ForegroundColor Green
+
+    $response = $Host.UI.PromptForChoice($title, $msg, $options, $default)
+} until ($response -eq 1)
