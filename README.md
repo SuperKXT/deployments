@@ -55,10 +55,9 @@ chmod u+x ./setup.sh
 
 Add the appropriate tags to the runner (`dev`, `qa`, or `production`)
 
-When prompted provide the frontend and backend user and repo name
-
-If on Windows, Start both runners as a windows service
+When prompted provide the repo credentials for each runner
 
 ---
+
 Check out the automated scripts here for more information:
 <https://github.com/actions/runner/blob/main/docs/automate.md>
