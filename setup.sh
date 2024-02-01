@@ -123,37 +123,31 @@ echo -e "\n${BLUE}-- RUNNER SETUP --${NC}"
 echo -e -n "${GREY}Github Personal Access Token:${NC} "
 read -r token
 export RUNNER_CFG_PAT="$token"
-echo -e -n "${GREY}Please enter the tag to add to the runners [qa, production, dev]:${NC} "
-read -r label
 
-echo -e "\n${BLUE}-- FRONTEND --${NC}"
-echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
-read -r frontend_user
-frontend_user=${frontend_user:-WiMetrixDev}
-while [ -z "${frontend_repo}" ]; do
-	echo -e -n "${GREY}Github Repo:${NC} "
-	read -r frontend_repo
+while :; do
+	echo -e -n "${GREY}Please enter the name of the runner:${NC} "
+	read -r name
+
+	echo -e -n "${GREY}Please enter the tag to add to the runners [qa, production, dev]:${NC} "
+	read -r label
+
+	echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
+	read -r user
+	user=${user:-WiMetrixDev}
+	while [ -z "${repo}" ]; do
+		echo -e -n "${GREY}Github Repo:${NC} "
+		read -r repo
+	done
+
+	mkdir "$name"
+	cd "$name" || exit
+	curl --progress-bar https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$user"/"$repo" -l "$label" -n "$name"-"$label"
+	cd ..
+	echo -e "${GREEN}Runner Started!${NC}"
+
+	echo -e "\n${GREY}Add Another Runner? ${NC}"
+	read -p "Press Y for yes N for no: " -n 1 -r
+	if [[ $REPLY =~ ^[Nn]$ ]]; then
+		break
+	fi
 done
-
-echo -e "\n${BLUE}-- BACKEND --${NC}"
-echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
-read -r backend_user
-backend_user=${backend_user:-WiMetrixDev}
-while [ -z "${backend_repo}" ]; do
-	echo -e -n "${GREY}Github Repo:${NC} "
-	read -r backend_repo
-done
-
-echo -e "\n${BLUE}Setting Up Frontend Runner...${NC}"
-mkdir frontend
-cd frontend || exit
-curl --progress-bar https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$frontend_user"/"$frontend_repo" -l "$label" -n frontend-"$label"
-cd ..
-echo -e "${GREEN}Frontend Runner Started!${NC}"
-
-echo -e "\n${BLUE}Setting Up Backend Runner...${NC}"
-mkdir backend
-cd backend || exit
-curl --progress-bar https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$backend_user"/"$backend_repo" -l "$label" -n backend-"$label"
-cd ..
-echo -e "${GREEN}Backend Runner Started!${NC}\n"
