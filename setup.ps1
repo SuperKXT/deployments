@@ -169,13 +169,13 @@ $default = 1  # 0=Yes, 1=No
 do {
 	Write-Host "`n-- RUNNER SETUP --" -ForegroundColor Cyan
 
-	Write-Host "Enter the name for the runner:"  -ForegroundColor Gray -NoNewline
-	$folder = Read-Host
+	Write-Host "Enter the name for the runner: "  -ForegroundColor Gray -NoNewline
+	$name = Read-Host
 
-	Remove-Item -Recurse -Path $folder
-	New-Item -ItemType Directory $folder
-	Copy-Item ./$runner_file $folder/
-	Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/$folder/$runner_file", "$PWD/$folder")
+	Remove-Item -Recurse -Path $name
+	New-Item -ItemType Directory $name
+	Copy-Item ./$runner_file $name/
+	Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/$name/$runner_file", "$PWD/$name")
 
 	Write-Host "Please enter the tag to add to the runner [qa, production, dev]: "  -ForegroundColor Gray -NoNewline
 	$label = Read-Host
@@ -200,8 +200,8 @@ do {
 		Exit-PSSession
 	}
 	Write-Host "$token"
-	Set-Location $folder
-	.\config.cmd --unattended --url https://github.com/$user/$repo --token $token --name $folder-$label --labels $label --work _work --runasservice
+	Set-Location $name
+	.\config.cmd --unattended --url https://github.com/$user/$repo --token $token --name $name-$label --labels $label --work _work --runasservice
 	Set-Location ..
 	Write-Host "Runner Started!" -ForegroundColor Green
 
