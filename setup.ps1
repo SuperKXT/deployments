@@ -186,6 +186,7 @@ do {
 	If ([string]::IsNullOrWhiteSpace($user)) {
 		$user = "WiMetrixDev"
 	}
+ 	$repo = ""
 	While ([string]::IsNullOrWhiteSpace($repo)) {
 		Write-Host "Github Repo: " -ForegroundColor Gray -NoNewline
 		$repo = Read-Host
