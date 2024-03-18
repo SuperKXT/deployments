@@ -134,7 +134,7 @@ while :; do
 	echo -e -n "${GREY}Github User [WiMetrixDev]:${NC} "
 	read -r user
 	user=${user:-WiMetrixDev}
- 	repo = ''
+	repo=''
 	while [ -z "${repo}" ]; do
 		echo -e -n "${GREY}Github Repo:${NC} "
 		read -r repo
