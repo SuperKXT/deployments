@@ -27,9 +27,6 @@ while ! command -v -p /usr/sbin/ufw ufw &>/dev/null; do
 	sudo apt -qq install -y ufw
 done
 sudo ufw enable
-sudo ufw allow OpenSSH
-sudo ufw allow http
-sudo ufw allow https
 sudo ufw allow 4000:4010/tcp
 sudo ufw allow 5000:5010/tcp
 echo -e "${GREEN}UFW enabled and configured!${NC}"
@@ -38,23 +35,23 @@ while ! command -v git &>/dev/null; do
 	echo -e "\n${BLUE}Installing Git...${NC}"
 	sudo apt update
 	sudo apt -qq install -y git-all
+	git config core.longpaths true
+	echo -e "${GREEN}Git Installed!${NC}"
 done
-git config core.longpaths true
-echo -e "${GREEN}Git Installed!${NC}"
 
 while ! command -v curl &>/dev/null; do
 	echo -e "\n${BLUE}Installing Curl...${NC}"
 	sudo apt update
 	sudo apt -qq install -y curl
+	echo -e "${GREEN}Curl Installed!${NC}"
 done
-echo -e "${GREEN}Curl Installed!${NC}"
 
 while ! command -v jq &>/dev/null; do
 	echo -e "\n${BLUE}Installing Jq...${NC}"
 	sudo apt update
 	sudo apt -qq install -y jq
+	echo -e "${GREEN}Jq Installed!${NC}"
 done
-echo -e "${GREEN}Jq Installed!${NC}"
 
 while ! command -v nvm &>/dev/null; do
 	sudo apt -qq uninstall -y node
@@ -63,8 +60,8 @@ while ! command -v nvm &>/dev/null; do
 	NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 	export NVM_DIR
 	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+	echo -e "${GREEN}NVM Installed!${NC}"
 done
-echo -e "${GREEN}NVM Installed!${NC}"
 
 echo -e "\n${BLUE}Downloading Node...${NC}"
 nvm install lts/*
@@ -99,24 +96,26 @@ if ! command -v azuredatastudio &>/dev/null; then
 	echo -e "${GREEN}Azure Data Studio Installed!${NC}"
 fi
 
-if ! test -f "pm2-install-main"; then
+# install pm2
+if ! command -v pm2 &>/dev/null; then
 	echo -e "\n${BLUE}Download PM2...${NC}"
+	rm -rf ./pm2-insaller-main
 	wget -q --show-progress https://github.com/jessety/pm2-installer/archive/main.zip -O main.zip
 	unzip main.zip
 	rm -f main.zip
+	cd pm2-installer-main || exit
+	npm run configure
+	npm run setup
+	cd .. || exit
+	rm -rf ./pm2-insaller-main
+	pm2 completion install
+	echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 fi
-cd pm2-installer-main || exit
-npm run configure
-npm run setup
-cd .. || exit
-rm -rf ./pm2-insaller-main
-pm2 completion install
-echo -e "${GREEN}PM2 Installed! And configured as a service${NC}"
 
 # Copy node libs to usr/local/bin to enable use with sudo
 node_version="$(node --version)"
 for name in node npm pnpm yarn pm2; do
-	sudo ln -s "$NVM_DIR/versions/node/$node_version/bin/$name" "/usr/local/bin/$name"
+	sudo ln -sf "$NVM_DIR/versions/node/$node_version/bin/$name" "/usr/local/bin/$name"
 done
 
 echo -e "\n${BLUE}-- RUNNER SETUP --${NC}"
