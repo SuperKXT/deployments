@@ -124,8 +124,11 @@ read -r token
 export RUNNER_CFG_PAT="$token"
 
 while :; do
-	echo -e -n "${GREY}Please enter the name of the runner:${NC} "
-	read -r name
+	name=''
+	while [ -z "${name}" ]; do
+		echo -e -n "${GREY}Please enter the name of the runner:${NC} "
+		read -r name
+	done
 
 	echo -e -n "${GREY}Please enter the tag to add to the runners [qa, production, dev]:${NC} "
 	read -r label
