@@ -144,7 +144,7 @@ while :; do
 
 	mkdir "$name"
 	cd "$name" || exit
-	curl --progress-bar https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$user" -l "$label" -n "$name"-"$label"
+	curl --progress-bar https://raw.githubusercontent.com/actions/runner/main/scripts/create-latest-svc.sh | bash -s -- -s "$user"/"$repo" -l "$label" -n "$name"-"$label"
 	cd ..
 	echo -e "${GREEN}Runner Started!${NC}"
 
