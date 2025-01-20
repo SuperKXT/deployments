@@ -19,7 +19,7 @@ Replace `Administrator` with the user, and `backend` with a descriptive name.
 
 ## Add the generated key to SSH config
 
-1. Go to the ssh folder via command line or via the file explorer.
+1. Go to the ssh folder via command-line or via the file explorer.
 ```bash
 cd /c/Users/Administrator/.ssh
 ```
@@ -33,7 +33,7 @@ Host backend
    IdentityFile C:\Users\Administrator\.ssh\backend
    IdentitiesOnly yes
 ```
-## Add the generate public key to the repo
+## Add the generated public key to the repo
 
 1. Open and copy the contents of the public key file. The path should be something like the following
 ```bash
